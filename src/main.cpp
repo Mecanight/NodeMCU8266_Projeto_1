@@ -8,20 +8,14 @@ IPAddress ip(192,168,1,160);//id di dispositivo
 IPAddress gateway(192,168,1,1);//gateway
 IPAddress subnet(255,255,255,0);//mascara
 
-
-
 WiFiServer server(80);
 
-
-String header;
-
+String header;//GET
 
 String output5State = "off";
 
-
-
+//D1 para LED
 const int output5 = 5;
-
 
 unsigned long currentTime = millis();
 
@@ -30,15 +24,14 @@ unsigned long previousTime = 0;
 const long timeoutTime = 2000;
 
 void setup() {
+
   Serial.begin(9600);
   
   pinMode(output5, OUTPUT);
 
- 
   digitalWrite(output5, LOW);
- 
 
- 
+??verificar na porta serial a conexão
   Serial.print("Connecting to ");
   Serial.println(ssid);
   WiFi.begin(ssid, password);
@@ -62,6 +55,8 @@ void loop(){
     String currentLine = "";                
     currentTime = millis();
     previousTime = currentTime;
+
+    //contador de tempo
     while (client.connected() && currentTime - previousTime <= timeoutTime) {
       currentTime = millis();         
       if (client.available()) {             
@@ -77,18 +72,19 @@ void loop(){
             client.println("Connection: close");
             client.println();
             
-            
+            //GET ON
             if (header.indexOf("GET /5/on") >= 0) {
               Serial.println("GPIO 5 on");
               output5State = "on";
               digitalWrite(output5, HIGH);
+
+              //GET OFF
             } else if (header.indexOf("GET /5/off") >= 0) {
               Serial.println("GPIO 5 off");
               output5State = "off";
               digitalWrite(output5, LOW);
             }
             
-        
             client.println("<!DOCTYPE html><html>");
             client.println("<head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">");
             client.println("<link rel=\"icon\" href=\"data:,\">");
@@ -98,11 +94,9 @@ void loop(){
             client.println("text-decoration: none; font-size: 30px; margin: 2px; cursor: pointer;}");
             client.println(".button2 {background-color: #77878A;}</style></head>");
             
-           
             client.println("<body><h1>ESP8266 Web Server</h1>");
             client.println("<body><h2>Prof. Rafael</h2>");
             
-          
             client.println("<p>GPIO 5 - State " + output5State + "</p>");
                   
             if (output5State=="off") {
@@ -113,7 +107,6 @@ void loop(){
                
             client.println("</body></html>");
             
-           
             client.println();
             
             break;
