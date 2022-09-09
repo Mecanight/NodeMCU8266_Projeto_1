@@ -1,1 +1,0 @@
-TweenMax.to("#img", 2, { rotation: 360, ease: Linear.easeNone, repeat: -1 })
